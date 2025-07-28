@@ -19,3 +19,4 @@ description: "A production-ready fullstack research agent that uses Gemini to st
 example_question: "A report on the latest Google I/O event"
 settings:
   deployment_targets: ["agent_engine", "cloud_run"]
+  interactive_command: "dev"
