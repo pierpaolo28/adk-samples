@@ -9,7 +9,7 @@ from google.genai import types as genai_types
 async def main():
     """Runs the agent with a sample query."""
     session_service = InMemorySessionService()
-    session_service.create_session(
+    await session_service.create_session(
         app_name="app", user_id="test_user", session_id="test_session"
     )
     runner = Runner(

@@ -15,7 +15,7 @@
 from google.adk.agents import Agent
 
 from ..config import config
-from ..utils import suppress_output_callback
+from ..agent_utils import suppress_output_callback
 
 blog_editor = Agent(
     model=config.critic_model,
