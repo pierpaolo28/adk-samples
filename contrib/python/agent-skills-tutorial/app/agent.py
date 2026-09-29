@@ -1,3 +1,17 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """Blog Skills Agent — Demonstrates 4 ways to use ADK Skills.
 
 This agent showcases:
@@ -7,9 +21,11 @@ This agent showcases:
   4. Meta skills — A skill-creator that generates new SKILL.md definitions
 """
 
+import os
 import pathlib
 
 from google.adk import Agent
+from google.adk.apps import App
 from google.adk.skills import load_skill_from_dir, models
 from google.adk.tools.skill_toolset import SkillToolset
 
@@ -160,7 +176,7 @@ skill_toolset = SkillToolset(
 )
 
 root_agent = Agent(
-    model="gemini-2.5-flash",
+    model=os.getenv("MODEL_NAME"),
     name="blog_skills_agent",
     description="A blog-writing agent powered by reusable skills.",
     instruction=(
@@ -183,3 +199,5 @@ root_agent = Agent(
     ),
     tools=[skill_toolset],
 )
+
+app = App(root_agent=root_agent, name="app")
