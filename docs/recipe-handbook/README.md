@@ -63,7 +63,7 @@ any new requirements automatically. Then check the
   automatically when you open this repo. Repo skills *build* the
   repo; they are never shipped to users.
 - **Plugin** — a recipe under
-  `plugins/<vertical>/<solution>/` (e.g. `plugins/retail/store-ops/`),
+  `plugins/<vertical>/<solution>/` (e.g. `plugins/retail/my-plugin/`),
   where the vertical names the business domain that owns it.
   Shipped to users like any other recipe. Unrelated to repo skills.
 - **Manifest** — `manifest.yaml`. Declares recipe metadata:
@@ -85,8 +85,8 @@ Open a GitHub issue at
 Include the recipe path and the CI check name if you're
 reporting a failure.
 
-Pull requests are routed via [`.github/CODEOWNERS`](../../.github/CODEOWNERS)
-once all CI checks pass and automated review comments are resolved.
+Pull requests are routed to maintainers automatically once all CI checks pass
+and automated review comments are resolved.
 
 ---
 

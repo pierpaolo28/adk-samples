@@ -147,8 +147,7 @@ with a letter, 30 characters at most.
 `Recipe folder contains 91 counted files; the limit is 70.`
 
 **Cause** — the recipe exceeds its budget. Under `contrib/` that is 70 files
-and 2 MB (or 200 files and 10 MB with `large: true` in `manifest.yaml`; see
-[anatomy — Size limits](./anatomy.md#size-limits)).
+and 2 MB (see [anatomy — Size limits](./anatomy.md#size-limits)).
 
 **Fix**
 
@@ -169,7 +168,7 @@ and 2 MB (or 200 files and 10 MB with `large: true` in `manifest.yaml`; see
 
 **Cause** — the required set is the union of every rule that applies to your
 recipe. Language rules use `manifest.language`, not the folder path: a
-vertical plugin at `plugins/retail/product-search` picks up the Python list
+vertical plugin at `plugins/retail/my-plugin` picks up the Python list
 because its manifest says `language: python`.
 
 | Rule | Applies to | Entries |
@@ -215,9 +214,9 @@ git add <recipe-path>/scripts/.gitkeep
 is mandatory.
 
 ```text
-plugins/retail/product-search/manifest.yaml    valid
-plugins/product-search/manifest.yaml           too shallow — no vertical
-plugins/retail/product-search/x/manifest.yaml  too deep
+plugins/retail/my-plugin/manifest.yaml    valid
+plugins/my-plugin/manifest.yaml           too shallow — no vertical
+plugins/retail/my-plugin/x/manifest.yaml  too deep
 ```
 
 **Fix**
@@ -270,26 +269,18 @@ git commit -m "Revert changes under .github/"
 
 If CI workflow or repository configuration changes are needed, please open an issue describing the requested changes or reach out to a repository administrator.
 
-**Confirm**, from the repo root — this lists exactly the files CI would flag.
-It deliberately passes `--is-admin false`, because the permission lookup needs
-a token the check has in CI and you generally do not have locally:
-
-```bash
-git -c core.quotePath=false diff --no-renames --name-only origin/main...HEAD \
-  | uv run --no-project python tools/check_github_dir_changes.py \
-      --author "$(git config user.name)" --is-admin false
-```
+**Confirm**, from the repo root —
+`git diff --name-only origin/main...HEAD -- .github/` prints nothing.
 
 ## Standalone lint or style config file
 
 **Symptom** — `Recipe contains a recipe-local Biome/golangci-lint/.editorconfig configuration file`
 
-**Cause** — the recipe contains a recipe-local configuration file (`biome.json`, `biome.jsonc`, `.biomerc*`, `.golangci.yml`, `.golangci.yaml`, `.golangci.toml`, `.golangci.json`, or an `.editorconfig` that configures Kotlin style). Style and lint configurations are centralized at the repository root. This check reports a warning and does not fail the PR.
+**Cause** — the recipe contains a recipe-local lint or style configuration file. Style and lint configurations are centralized at the repository root. This check reports a warning and does not fail the PR.
 
-**Fix** — delete the file from the recipe, or remove the section or property the warning names from `.editorconfig`. If repository-wide style or lint rules need updating, update the root configuration file.
+**Fix** — delete the local lint or style config file from the recipe, or remove the language-specific style section the warning names from `.editorconfig`.
 
-**Confirm**, from the repo root —
-`uv run python .github/scripts/check_recipe_lint_config.py <recipe-path>`
+**Confirm**, from the repo root — verify the local config file is deleted from `<recipe-path>`.
 
 ## README.md is missing or empty
 
@@ -376,7 +367,7 @@ and how to run it. If the error names an encoding, re-save it as UTF-8.
 
 **Fix**
 
-1. Run the container locally with the same environment variables `check_recipe_docker.py` injects in CI:
+1. Run the container locally with the test environment variables CI uses:
    ```bash
    docker run -p 8080:8080 \
      -e USE_IN_MEMORY_SESSION=true \
@@ -436,12 +427,12 @@ yours does not match.
 # contrib/python/my-recipe
 name = "my-recipe"
 
-# plugins/retail/product-search
-name = "retail-product-search"
+# plugins/retail/my-plugin
+name = "retail-my-plugin"
 ```
 
 **Confirm**, from the repo root —
-`uv run python .github/scripts/check_recipe_pyproject.py <recipe-path>`
+`grep -n "^name =" <recipe-path>/pyproject.toml`
 
 ## Project description doesn't match manifest
 
@@ -453,7 +444,7 @@ name = "retail-product-search"
 or delete `[project].description`, which is optional.
 
 **Confirm**, from the repo root —
-`uv run python .github/scripts/check_recipe_pyproject.py <recipe-path>`
+`grep -n "^description" <recipe-path>/pyproject.toml <recipe-path>/manifest.yaml`
 
 ## requires-python below 3.11
 
@@ -469,7 +460,7 @@ requires-python = ">=3.11"
 ```
 
 **Confirm**, from the repo root —
-`uv run python .github/scripts/check_recipe_pyproject.py <recipe-path>`
+`grep -n "^requires-python" <recipe-path>/pyproject.toml`
 
 ## pyproject.toml has no sibling uv.lock
 
@@ -507,7 +498,7 @@ Use **double** brackets. `[tool.uv.index]` with single brackets is a
 different TOML construct, and uv rejects it.
 
 **Confirm**, from the repo root —
-`uv run python .github/scripts/check_recipe_pyproject.py <recipe-path>`
+`grep -A2 "\[\[tool.uv.index\]\]" <recipe-path>/pyproject.toml`
 
 ## Env var missing from .env.example
 
@@ -522,11 +513,10 @@ the source and adds every variable it finds. Without an AI assistant, add
 the names the error lists to `.env.example` by hand.
 
 A false positive such as `os.getenv("HOME")` should already be suppressed.
-If one slips through, file an issue against
-[`check_env_vars.py`](../../.github/scripts/check_env_vars.py).
+If one slips through, open an issue.
 
 **Confirm**, from the repo root —
-`uv run python .github/scripts/check_env_vars.py <recipe-path>`
+`grep -n "<VAR>" <recipe-path>/.env.example`
 
 ## uv.lock out of sync
 
