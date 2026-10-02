@@ -17,7 +17,6 @@
 package com.google.adk.samples.agents.llmauditor
 
 import com.google.adk.kt.agents.SequentialAgent
-import com.google.adk.kt.models.Gemini
 
 /**
  * The LLM Auditor is a sequential multi-agent pipeline that fact-checks
@@ -29,7 +28,7 @@ import com.google.adk.kt.models.Gemini
  *    minimally edits the answer to correct any inaccuracies.
  */
 object LlmAuditorAgent {
-    private val model = Gemini(name = "gemini-flash-latest")
+    private val model = Models.fromEnvironment()
 
     @JvmField
     val rootAgent =

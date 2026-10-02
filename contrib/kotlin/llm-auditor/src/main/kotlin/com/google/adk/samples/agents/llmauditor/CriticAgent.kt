@@ -18,7 +18,7 @@ package com.google.adk.samples.agents.llmauditor
 
 import com.google.adk.kt.agents.Instruction
 import com.google.adk.kt.agents.LlmAgent
-import com.google.adk.kt.models.Gemini
+import com.google.adk.kt.models.Model
 import com.google.adk.kt.tools.GoogleSearchTool
 
 /**
@@ -26,7 +26,7 @@ import com.google.adk.kt.tools.GoogleSearchTool
  * Search. It identifies claims, verifies them against external sources, and
  * produces a structured audit report with verdicts for each claim.
  */
-fun createCriticAgent(model: Gemini): LlmAgent =
+fun createCriticAgent(model: Model): LlmAgent =
     LlmAgent(
         name = "critic_agent",
         description = "Fact-checks claims in an answer using Google Search.",

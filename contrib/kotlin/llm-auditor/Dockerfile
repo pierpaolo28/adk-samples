@@ -28,8 +28,9 @@ WORKDIR /app
 
 COPY --from=build /build/build/install/llm-auditor/lib ./lib
 
-# Defaults live in .env.example; the agent reads them from .env.
-COPY .env.example ./.env
+# Operators supply .env or environment variables at deploy time. The agent reads
+# them lazily via Models.fromEnvironment(), so the server starts without creds
+# and surfaces missing config on the first request instead of at boot.
 
 RUN useradd --create-home --uid 10001 appuser && \
     chown -R appuser:appuser /app
@@ -40,6 +41,10 @@ USER appuser
 # outside the container; it defaults to 127.0.0.1 otherwise.
 ENV HOST=0.0.0.0
 ENV PORT=8080
+# MODEL_NAME is required at startup. Not a credential — just the recipe's
+# default model identifier (matches .env.example). Operators override with
+# `-e MODEL_NAME=...` at deploy time.
+ENV MODEL_NAME=gemini-flash-latest
 EXPOSE 8080
 
 CMD ["java", "-cp", "lib/*", "com.google.adk.samples.agents.llmauditor.WebMainKt"]

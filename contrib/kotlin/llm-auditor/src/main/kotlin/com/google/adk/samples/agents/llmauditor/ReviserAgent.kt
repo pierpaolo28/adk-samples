@@ -19,8 +19,8 @@ package com.google.adk.samples.agents.llmauditor
 import com.google.adk.kt.agents.Instruction
 import com.google.adk.kt.agents.LlmAgent
 import com.google.adk.kt.callbacks.AfterModelCallback
-import com.google.adk.kt.models.Gemini
 import com.google.adk.kt.models.LlmResponse
+import com.google.adk.kt.models.Model
 import com.google.adk.kt.types.Part
 
 /**
@@ -50,7 +50,7 @@ private val removeEndOfEditMark =
  * critic's findings. It minimally edits the original text to correct errors
  * while preserving structure and style.
  */
-fun createReviserAgent(model: Gemini): LlmAgent =
+fun createReviserAgent(model: Model): LlmAgent =
     LlmAgent(
         name = "reviser_agent",
         description = "Revises answers based on the critic's fact-check findings.",
