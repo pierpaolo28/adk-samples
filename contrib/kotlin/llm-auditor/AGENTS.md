@@ -107,7 +107,7 @@ not paste confidential content into it.
 
 ## Where to run things
 
-All commands run from this directory (`core/kotlin/llm-auditor`). Requires
+All commands run from this directory (`contrib/kotlin/llm-auditor`). Requires
 JDK 17+ and `GOOGLE_API_KEY`.
 
 | Task | Command |

@@ -76,7 +76,7 @@ llm-auditor/
 1.  Clone the repository and navigate to the agent directory:
 
     ```bash
-    cd core/kotlin/llm-auditor
+    cd contrib/kotlin/llm-auditor
     ```
 
 2.  Set your Gemini API key as an environment variable:
