@@ -1,6 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    kotlin("jvm") version "2.1.20"
-    id("com.google.devtools.ksp") version "2.1.20-2.0.1"
+    kotlin("jvm") version "2.3.20"
     application
 }
 
@@ -8,20 +9,28 @@ repositories {
     mavenCentral()
 }
 
-// All three adk-kotlin artifacts must resolve to the same version — the KSP
-// processor generates code against core's API — so they are pinned together.
-val adkVersion = "0.9.0"
+// Both adk-kotlin artifacts must resolve to the same version, so they are
+// pinned together.
+val adkVersion = "1.2.0"
 
 dependencies {
     implementation("com.google.adk:google-adk-kotlin-core:$adkVersion")
     implementation("com.google.adk:google-adk-kotlin-webserver:$adkVersion")
-    ksp("com.google.adk:google-adk-kotlin-processor:$adkVersion")
 
     testImplementation(kotlin("test"))
 }
 
+// Target Java 17 bytecode without pinning a toolchain, so the build runs on
+// any JDK 17 or later.
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 kotlin {
-    jvmToolchain(17)
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
 
 application {
@@ -33,11 +42,9 @@ application {
 
 tasks.test {
     useJUnitPlatform()
-    // Gemini() refuses to construct without an API key, even though the
-    // runnability test never calls the model. A placeholder keeps the test
-    // independent of whatever key the developer or runner has exported.
-    environment("GOOGLE_API_KEY", "runnability-test-placeholder")
-    environment.remove("GEMINI_API_KEY")
+    // The test never calls the model; it only needs MODEL_NAME to build the
+    // agent graph.
+    environment("MODEL_NAME", "gemini-flash-latest")
 }
 
 tasks.named<JavaExec>("run") {
